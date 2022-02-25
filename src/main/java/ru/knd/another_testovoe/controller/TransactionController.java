@@ -18,15 +18,13 @@ public class TransactionController {
     private TransactionService service;
 
     @PostMapping("/add_arrival")
-    public Transaction addArrivalTtransaction(@RequestBody TransactionDTO newTransactionDTO){
+    public Transaction addArrivalTransaction(@RequestBody TransactionDTO newTransactionDTO){
         return service.addTransaction(newTransactionDTO, "Поступление");
     }
 
     @PostMapping("/add_allowance")
     public Transaction addAllowanceTransaction(@RequestBody TransactionDTO newTransactionDTO){
-        if(service.isProductQuantityNotNegative(newTransactionDTO))
         return service.addTransaction(newTransactionDTO, "Списание");
-        else return null;
     }
 
     @GetMapping("/get/{id}")

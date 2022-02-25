@@ -20,13 +20,6 @@ public class TransactionService {
     @Autowired
     private ProductRepository productRepository;
 
-    public boolean isProductQuantityNotNegative(TransactionDTO transactionDTO){
-        Product product = productRepository.getById(transactionDTO.getProductId());
-        long arrivalQuantity = transactionRepository.getProductArrivalQuantity(product).getQuantity();
-        long allowanceQuantity = transactionRepository.getProductAllowanceQuantity(product).getQuantity();
-        return transactionDTO.getQuantity()>(arrivalQuantity-allowanceQuantity);
-    }
-
     public Transaction addTransaction(TransactionDTO transactionDTO, String transactionType){
         if (isProductExist(transactionDTO.getProductId()))
         return saveTransaction(transactionDTO, transactionType);
@@ -76,7 +69,7 @@ public class TransactionService {
             ProductQuantity productAllowanceQuantity = productsAllowanceQuantity.stream().filter(
                     productQuantity -> productArrivalQuantity.getName().equals(productQuantity.getName()))
                     .findAny().orElse(new ProductQuantity(productArrivalQuantity.getName(),0));
-                productArrivalQuantity.setQuantity(productAllowanceQuantity.getQuantity()-productAllowanceQuantity.getQuantity());
+                productArrivalQuantity.setQuantity(productArrivalQuantity.getQuantity()-productAllowanceQuantity.getQuantity());
         }
         return productsArrivalQuantity;
     }

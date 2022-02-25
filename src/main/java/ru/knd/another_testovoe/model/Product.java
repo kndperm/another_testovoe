@@ -14,11 +14,9 @@ import java.util.List;
 @Table(name = "products", schema = "test")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String shortName;
     private String specification;
-    @OneToMany
-    private List<Transaction> transactions;
 }
