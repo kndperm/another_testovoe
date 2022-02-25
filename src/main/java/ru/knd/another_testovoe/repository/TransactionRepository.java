@@ -12,14 +12,6 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> getAllByProductId(long id);
 
-    @Query("select new ru.knd.another_testovoe.dto.ProductQuantity(t.product.name,t.quantity)" +
-            " from Transaction t where t.product = :product and t.operationType='Поступление'")
-    ProductQuantity getProductArrivalQuantity(@Param("product") Product product);
-
-    @Query("select new ru.knd.another_testovoe.dto.ProductQuantity(t.product.name,t.quantity)" +
-            " from Transaction t where t.product = :product and t.operationType='Списание'")
-    ProductQuantity getProductAllowanceQuantity(@Param("product") Product product);
-
     @Query("select new ru.knd.another_testovoe.dto.ProductQuantity(p.name, sum(t.quantity))" +
             " from Transaction t join t.product p where t.operationType='Поступление' group by p.name")
     List<ProductQuantity> getProductsArrivalQuantity();
