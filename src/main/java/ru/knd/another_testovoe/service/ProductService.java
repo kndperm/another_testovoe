@@ -6,12 +6,15 @@ import ru.knd.another_testovoe.dto.ProductDTO;
 import ru.knd.another_testovoe.model.Product;
 import ru.knd.another_testovoe.repository.ProductRepository;
 
+import javax.transaction.Transactional;
+
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository repository;
 
+    @Transactional
     public Product addProduct(ProductDTO newProductDTO){
         Product newProduct = new Product();
         newProduct.setName(newProductDTO.getName());
@@ -24,6 +27,7 @@ public class ProductService {
         return repository.getById(id);
     }
 
+    @Transactional
     public Product editProduct(Product editProductData){
         Product editedProduct =  getProduct(editProductData.getId());
         if(editProductData.getName()!=null)

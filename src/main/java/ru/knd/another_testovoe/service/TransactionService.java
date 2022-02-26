@@ -10,6 +10,7 @@ import ru.knd.another_testovoe.model.Transaction;
 import ru.knd.another_testovoe.repository.ProductRepository;
 import ru.knd.another_testovoe.repository.TransactionRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -20,13 +21,24 @@ public class TransactionService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Transactional
     public Transaction addTransaction(TransactionDTO transactionDTO, String transactionType){
-        if (isProductExist(transactionDTO.getProductId()))
-        return saveTransaction(transactionDTO, transactionType);
-        else return null;
+        if (isProductExist(transactionDTO.getProductId())) {
+            if (transactionType == "Списание" && isTotalQuantityNegative(transactionDTO))
+                return null;
+            return saveTransaction(transactionDTO, transactionType);
+        } else return null;
     }
 
-    public Transaction saveTransaction(TransactionDTO newTransactionDTO, String transactionType){
+    private boolean isTotalQuantityNegative(TransactionDTO transactionDTO){
+        List<ProductQuantity> productsCurrentQuantity = getProductCurrentQuantity();
+        Product product = productRepository.getById(transactionDTO.getProductId());
+        ProductQuantity currentQuantity = productsCurrentQuantity.stream().filter(productQuantity ->
+                productQuantity.getName().equals(product.getName())).findFirst().get();
+        return currentQuantity.getQuantity()- transactionDTO.getQuantity() <0;
+    }
+
+    private Transaction saveTransaction(TransactionDTO newTransactionDTO, String transactionType){
         Transaction transaction = new Transaction();
         transaction.setOperationType(transactionType);
         transaction.setProduct(productRepository.getById(newTransactionDTO.getProductId()));
@@ -43,6 +55,7 @@ public class TransactionService {
         return transactionRepository.getById(id);
     }
 
+    @Transactional
     public Transaction editTransaction(TransactionEditDTO editTransactionData){
         Transaction editedTransaction = getTransaction(editTransactionData.getTransactionId());
         if(editTransactionData.getDate()!=null)
