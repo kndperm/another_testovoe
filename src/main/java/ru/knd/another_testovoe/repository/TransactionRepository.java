@@ -2,9 +2,7 @@ package ru.knd.another_testovoe.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import ru.knd.another_testovoe.dto.ProductQuantity;
-import ru.knd.another_testovoe.model.Product;
 import ru.knd.another_testovoe.model.Transaction;
 
 import java.util.List;

@@ -14,11 +14,11 @@ import java.time.LocalDate;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String operationType;
     @Column(name = "transaction_date")
     private LocalDate date;
-    private long quantity;
+    private Long quantity;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

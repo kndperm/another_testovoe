@@ -3,6 +3,7 @@ package ru.knd.another_testovoe.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.knd.another_testovoe.dto.ProductDTO;
+import ru.knd.another_testovoe.dto.StatusResponse;
 import ru.knd.another_testovoe.model.Product;
 import ru.knd.another_testovoe.service.ProductService;
 
@@ -14,8 +15,9 @@ public class ProductController {
     private ProductService service;
 
     @PostMapping("/add")
-    public Product addProduct(@RequestBody ProductDTO newProduct){
-        return service.addProduct(newProduct);
+    public StatusResponse addProduct(@RequestBody ProductDTO newProduct){
+        Product product = service.addProduct(newProduct);
+        return new StatusResponse("OK", "Продукт добавлен", product);
     }
 
     @GetMapping("/get/{id}")
@@ -24,12 +26,14 @@ public class ProductController {
     }
 
     @PutMapping("/edit")
-    public Product editProduct(@RequestBody Product product){
-        return service.editProduct(product);
+    public StatusResponse editProduct(@RequestBody Product product){
+        Product editProduct = service.editProduct(product);
+        return new StatusResponse("OK", "Продукт изменен", editProduct);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteProduct(@PathVariable long id){
+    public StatusResponse deleteProduct(@PathVariable long id){
         service.deleteProduct(id);
+        return new StatusResponse("OK", "Продукт удален", null);
     }
 }

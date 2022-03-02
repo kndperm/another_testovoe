@@ -8,8 +8,8 @@ import java.time.LocalDate;
 @Setter
 @Getter
 public class TransactionEditDTO {
-    private long transactionId;
-    private long productId;
+    private Long transactionId;
+    private Long productId;
     private LocalDate date;
-    private long quantity;
+    private Long quantity;
 }

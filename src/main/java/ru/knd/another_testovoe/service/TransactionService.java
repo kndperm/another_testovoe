@@ -22,23 +22,27 @@ public class TransactionService {
     private ProductRepository productRepository;
 
     @Transactional
-    public Transaction addTransaction(TransactionDTO transactionDTO, String transactionType){
+    public Transaction addTransaction(TransactionDTO transactionDTO, String transactionType) {
         if (isProductExist(transactionDTO.getProductId())) {
-            if (transactionType == "Списание" && isTotalQuantityNegative(transactionDTO))
+            if (transactionType.equals("Списание") && isTotalQuantityNegative(transactionDTO))
                 return null;
             return saveTransaction(transactionDTO, transactionType);
         } else return null;
     }
 
-    private boolean isTotalQuantityNegative(TransactionDTO transactionDTO){
+    private boolean isTotalQuantityNegative(TransactionDTO transactionDTO) {
         List<ProductQuantity> productsCurrentQuantity = getProductCurrentQuantity();
         Product product = productRepository.getById(transactionDTO.getProductId());
-        ProductQuantity currentQuantity = productsCurrentQuantity.stream().filter(productQuantity ->
-                productQuantity.getName().equals(product.getName())).findFirst().get();
-        return currentQuantity.getQuantity()- transactionDTO.getQuantity() <0;
+        try {
+            ProductQuantity currentQuantity = productsCurrentQuantity.stream().filter(productQuantity ->
+                    productQuantity.getName().equals(product.getName())).findFirst().get();
+            return currentQuantity.getQuantity() - transactionDTO.getQuantity() < 0;
+        } catch (Exception e) {
+            return true;
+        }
     }
 
-    private Transaction saveTransaction(TransactionDTO newTransactionDTO, String transactionType){
+    private Transaction saveTransaction(TransactionDTO newTransactionDTO, String transactionType) {
         Transaction transaction = new Transaction();
         transaction.setOperationType(transactionType);
         transaction.setProduct(productRepository.getById(newTransactionDTO.getProductId()));
@@ -47,42 +51,42 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    private boolean isProductExist(long id){
+    private boolean isProductExist(long id) {
         return productRepository.existsById(id);
     }
 
-    public Transaction getTransaction(long id){
+    public Transaction getTransaction(long id) {
         return transactionRepository.getById(id);
     }
 
     @Transactional
-    public Transaction editTransaction(TransactionEditDTO editTransactionData){
+    public Transaction editTransaction(TransactionEditDTO editTransactionData) {
         Transaction editedTransaction = getTransaction(editTransactionData.getTransactionId());
-        if(editTransactionData.getDate()!=null)
+        if (editTransactionData.getDate() != null)
             editedTransaction.setDate(editTransactionData.getDate());
-        if(editTransactionData.getQuantity()!=0)
+        if (editTransactionData.getQuantity() != 0)
             editedTransaction.setQuantity(editTransactionData.getQuantity());
-        if(editTransactionData.getProductId()!=0)
+        if (editTransactionData.getProductId() != 0)
             editedTransaction.setProduct(productRepository.getById(editTransactionData.getProductId()));
         return transactionRepository.save(editedTransaction);
     }
 
-    public void deleteTransaction(long id){
+    public void deleteTransaction(long id) {
         transactionRepository.deleteById(id);
     }
 
-    public List<Transaction> getProductTransactions(long id){
+    public List<Transaction> getProductTransactions(long id) {
         return transactionRepository.getAllByProductId(id);
     }
 
-    public List<ProductQuantity> getProductCurrentQuantity(){
+    public List<ProductQuantity> getProductCurrentQuantity() {
         List<ProductQuantity> productsArrivalQuantity = transactionRepository.getProductsArrivalQuantity();
         List<ProductQuantity> productsAllowanceQuantity = transactionRepository.getProductsAllowanceQuantity();
-        for (ProductQuantity productArrivalQuantity: productsArrivalQuantity) {
+        for (ProductQuantity productArrivalQuantity : productsArrivalQuantity) {
             ProductQuantity productAllowanceQuantity = productsAllowanceQuantity.stream().filter(
-                    productQuantity -> productArrivalQuantity.getName().equals(productQuantity.getName()))
-                    .findAny().orElse(new ProductQuantity(productArrivalQuantity.getName(),0));
-                productArrivalQuantity.setQuantity(productArrivalQuantity.getQuantity()-productAllowanceQuantity.getQuantity());
+                            productQuantity -> productArrivalQuantity.getName().equals(productQuantity.getName()))
+                    .findAny().orElse(new ProductQuantity(productArrivalQuantity.getName(), 0));
+            productArrivalQuantity.setQuantity(productArrivalQuantity.getQuantity() - productAllowanceQuantity.getQuantity());
         }
         return productsArrivalQuantity;
     }

@@ -1,13 +1,13 @@
 CREATE SCHEMA IF NOT EXISTS test;
 CREATE TABLE IF NOT EXISTS test.products(
-    id bigint NOT NULL,
+    id BIGSERIAL NOT NULL,
     name text,
     short_name text,
     specification text,
     PRIMARY KEY (id)
 );
 CREATE TABLE IF NOT EXISTS test.product_transactions(
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     operation_type text,
     transaction_date DATE,
     quantity bigint,
